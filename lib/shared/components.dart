@@ -1,3 +1,4 @@
+import 'package:bmi_calculator/models/task_model.dart';
 import 'package:flutter/material.dart';
 
 class Components {
@@ -65,13 +66,35 @@ class Components {
       );
 
   // simple Text
-  simpleText({txt = 'Text', double size = 20}) => Text(
+  simpleText({txt = 'Text', double size = 20, bool bold = false}) => Text(
         txt,
-        style: TextStyle(fontSize: size),
+        style: TextStyle(
+            fontSize: size, fontWeight: bold ? FontWeight.bold : null),
       );
 
   SizedBox box({double h = 20, double w = 20}) => SizedBox(
         height: h,
         width: w,
       );
+
+  // task builder
+  Widget buildTaskItem(TaskModel task) => Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Row(
+      children: [
+        CircleAvatar(
+          child: simpleText(txt: task.time, size: 15),
+          radius: 35,
+        ),
+        box(w: 20),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            simpleText(txt: task.title, bold: true),
+            simpleText(txt: task.date),
+          ],
+        )
+      ],
+    ),
+  );
 }

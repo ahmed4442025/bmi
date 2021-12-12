@@ -1,17 +1,18 @@
+import 'package:bmi_calculator/shared/pupblic_vars.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bmi_calculator/models/task_model.dart';
 
 class SqlController {
   late Database database2;
-
-  String taskTable = 'tasks';
+  final String _taskTable = 'tasks';
+  late List<Map> allTasks;
 
   void createDB() async {
-    var db = await openDatabase('todo.db', version: 1, onCreate: (db, version) {
+    await openDatabase('todo.db', version: 1, onCreate: (db, version) {
       print('db created');
       db
           .execute(
-              'CREATE TABLE $taskTable (id INTEGER PRIMARY KEY, title TEXT, date TEXT, time TEXT, status TEXT)')
+              'CREATE TABLE $_taskTable (id INTEGER PRIMARY KEY, title TEXT, date TEXT, time TEXT, status TEXT)')
           .then((value) {
         print('table created');
       }).catchError((error) {
@@ -19,7 +20,9 @@ class SqlController {
       });
     }, onOpen: (db) {
       print('db opened');
+      setAllTasksToVar(db);
       database2 = db;
+
     });
   }
 
@@ -29,7 +32,7 @@ class SqlController {
     String names = 'title, date, time, status';
     String values =
         '"${task.title}", "${task.date}", "${task.time}", "${task.status}" ';
-    return 'INSERT INTO $taskTable($names) VALUES($values)';
+    return 'INSERT INTO $_taskTable($names) VALUES($values)';
   }
 
   void insertNewTask(TaskModel task) {
@@ -40,6 +43,25 @@ class SqlController {
         print('ERROR when inserting new task ${error.toString()}');
       });
     });
+    setAllTasksToVar(database2);
+  }
+
+  Future<List<Map>> _getAllTasksFromTabl(Database db) async{
+    return await db.rawQuery('SELECT * FROM $_taskTable');
+  }
+
+  setAllTasksToVar(Database db){
+    _getAllTasksFromTabl(db).then((value){
+      allTasks = value;
+      _tasksRawToTaksModel(value);
+    });
+  }
+
+  _tasksRawToTaksModel(List<Map<dynamic, dynamic>> tasksRaw){
+    TaskModel t = TaskModel('title', 'date', 'time', 'status');
+    for(int i =0; i<tasksRaw.length; i++){
+      allTasksPublic.add(t.fromMap(tasksRaw[i]));
+    }
   }
 
 

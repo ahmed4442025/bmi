@@ -63,13 +63,14 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
   // main Floating Button
   floatingB() => FloatingActionButton(
       onPressed: () {
-        if (bottomSheetShowedIs){
-          if(formKey.currentState!.validate()){
+        if (bottomSheetShowedIs) {
+          if (formKey.currentState!.validate()) {
             sqlC.insertNewTask(getInfoAsTask());
             showBottomSheet();
           }
-        }else{showBottomSheet();}
-
+        } else {
+          showBottomSheet();
+        }
       },
       child: Icon(fabIcon));
 
@@ -141,7 +142,12 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
       }
       changeFABData(bottomSheetShowedIs);
     } else {
-      scaffoldKey.currentState!.showBottomSheet((context) => bottomSheet1());
+      scaffoldKey.currentState!
+          .showBottomSheet((context) => bottomSheet1())
+          .closed
+          .then((value) {
+        changeFABData(true);
+      });
       changeFABData(bottomSheetShowedIs);
     }
   }
@@ -170,8 +176,7 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
 
   // get info as a Task
   getInfoAsTask() =>
-      TaskModel(titleContrl.text, dateContrl.text, titleContrl.text, 'new');
-
+      TaskModel(titleContrl.text, dateContrl.text, timeContrl.text, 'new');
 }
 
 class TodoHomeLayoutData {
