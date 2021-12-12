@@ -4,21 +4,26 @@ class Components {
   // simpleTextField
   Widget simpleTextField(
           {required TextEditingController controler,
+          Function()? onPasswordIconPressed,
+          Function()? ontap,
           bool password = false,
           IconData? passwordIcon,
           String lableTxt = 'text',
-          Function()? onPasswordIconPressed,
           TextInputType? keyBordType,
-          String validatorMsg = "This field can't be empty"}) =>
+          String validatorMsg = "This field can't be empty",
+          IconData? prefixIcon,
+          bool readOnly = false}) =>
       TextFormField(
         controller: controler,
+        onTap: ontap,
+        readOnly: readOnly,
         obscureText: password,
         enableSuggestions: !password,
         autocorrect: !password,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           labelText: password ? 'password' : lableTxt,
-          prefixIcon: Icon(Icons.star),
+          prefixIcon: prefixIcon == null ? null : Icon(prefixIcon),
           suffixIcon: IconButton(
             icon: Icon(passwordIcon),
             onPressed: onPasswordIconPressed,
@@ -60,8 +65,13 @@ class Components {
       );
 
   // simple Text
-  simpleText({txt = 'Text',double size = 20}) => Text(
+  simpleText({txt = 'Text', double size = 20}) => Text(
         txt,
         style: TextStyle(fontSize: size),
+      );
+
+  SizedBox box({double h = 20, double w = 20}) => SizedBox(
+        height: h,
+        width: w,
       );
 }

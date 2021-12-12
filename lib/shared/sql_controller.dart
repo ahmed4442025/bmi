@@ -32,7 +32,7 @@ class SqlController {
     return 'INSERT INTO $taskTable($names) VALUES($values)';
   }
 
-  void insertNewTask(TaskModel task)  {
+  void insertNewTask(TaskModel task) {
     database2.transaction((txn) async {
       txn.rawInsert(_taskToInserter(task)).then((value) {
         print('inserted successfully! ID: { $value }');
