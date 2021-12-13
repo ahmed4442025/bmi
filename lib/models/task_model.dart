@@ -7,7 +7,7 @@ class TaskModel {
 
   TaskModel(this.title, this.date, this.time, this.status, {this.id = -1});
 
-  TaskModel fromMap(Map<dynamic, dynamic> map) {
+  static TaskModel fromMap(Map<dynamic, dynamic> map) {
     return TaskModel(map['title'], map['date'], map['time'], map['status'], id: map['id']);
   }
 

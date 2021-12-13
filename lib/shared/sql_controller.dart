@@ -58,9 +58,8 @@ class SqlController {
   }
 
   _tasksRawToTaksModel(List<Map<dynamic, dynamic>> tasksRaw){
-    TaskModel t = TaskModel('title', 'date', 'time', 'status');
     for(int i =0; i<tasksRaw.length; i++){
-      allTasksPublic.add(t.fromMap(tasksRaw[i]));
+      allTasksPublic.add(TaskModel.fromMap(tasksRaw[i]));
     }
   }
 

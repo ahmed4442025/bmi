@@ -30,6 +30,10 @@ dependencies:
   flutter:
     sdk: flutter
   sqflite: ^2.0.1
+  bloc: ^8.0.1
+  flutter_bloc: ^8.0.0
+
+
 
 
 

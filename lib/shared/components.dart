@@ -32,7 +32,7 @@ class Components {
         ),
         keyboardType: password ? TextInputType.visiblePassword : keyBordType,
         validator: (value) {
-          if (value != null && value.isEmpty) {
+          if (value!.isEmpty) {
             return validatorMsg;
           }
         },
@@ -45,9 +45,10 @@ class Components {
           bool upercase = true,
           double hight = 40,
           Color clr = Colors.blue,
-          double borderR = 10}) =>
+          double borderR = 10,
+          double w = double.infinity}) =>
       Container(
-        width: double.infinity,
+        width: w,
         height: 40,
         child: MaterialButton(
           onPressed: onpressed,
@@ -79,22 +80,22 @@ class Components {
 
   // task builder
   Widget buildTaskItem(TaskModel task) => Padding(
-    padding: const EdgeInsets.all(20.0),
-    child: Row(
-      children: [
-        CircleAvatar(
-          child: simpleText(txt: task.time, size: 15),
-          radius: 35,
-        ),
-        box(w: 20),
-        Column(
-          mainAxisSize: MainAxisSize.min,
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
           children: [
-            simpleText(txt: task.title, bold: true),
-            simpleText(txt: task.date),
+            CircleAvatar(
+              child: simpleText(txt: task.time, size: 15),
+              radius: 35,
+            ),
+            box(w: 20),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                simpleText(txt: task.title, bold: true),
+                simpleText(txt: task.date),
+              ],
+            )
           ],
-        )
-      ],
-    ),
-  );
+        ),
+      );
 }

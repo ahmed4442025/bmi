@@ -1,4 +1,5 @@
 import 'package:bmi_calculator/modules/bmi/home_scr.dart';
+import 'package:bmi_calculator/modules/counter_scr/counter_scr.dart';
 import 'package:bmi_calculator/modules/other/login_scr.dart';
 import 'package:bmi_calculator/modules/other/tets_fun.dart';
 import 'package:bmi_calculator/layout/todo_home_layout.dart';
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SafeArea(child: TodoHomeLayout()),
+      home: SafeArea(child: CounterScr()),
     );
   }
 }
