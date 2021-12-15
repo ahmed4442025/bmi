@@ -18,14 +18,47 @@ class _testFunState extends State<testFun> {
   //==============
   Widget mainContainer() => Container(
         child: Center(
-          child: simpleBottun(onpressed:fun),
+          child: simpleBottun(onpressed: testAll),
           // child: CircularProgressIndicator(value: .5),
         ),
       );
 
+  int x = 0;
 
-  void fun(){
-    print('this is fun()');
+  void fun() async {
+    await Future.delayed(const Duration(milliseconds: 2000), () {
+      x += 2;
+    });
+    print('this is fun()$x');
+  }
+
+  Future<int> wait2Sec(int k) async {
+    int y = 0;
+    await Future.delayed(const Duration(milliseconds: 2000), () {
+      k += 2;
+    });
+    return k;
+  }
+
+  void testThen() {
+    int j = 0;
+    wait2Sec(j).then((value) {
+      j = value;
+    });
+    print('testThen1 :  $j');
+  }
+
+  void testThen2() {
+    int j = 0;
+    wait2Sec(j).then((value) {
+      j = value;
+      print('testThen2 :  $j');
+    });
+  }
+
+  void testAll() {
+    testThen();
+    testThen2();
   }
 
   Widget simpleBottun(

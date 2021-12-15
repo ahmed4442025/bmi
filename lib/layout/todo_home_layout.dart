@@ -1,7 +1,4 @@
 import 'package:bmi_calculator/models/task_model.dart';
-import 'package:bmi_calculator/modules/archived/archived_scr.dart';
-import 'package:bmi_calculator/modules/tasks/tasks_scr.dart';
-import 'package:bmi_calculator/modules/tasks_done/tsaks_done_scr.dart';
 import 'package:bmi_calculator/shared/cubit/cubit.dart';
 import 'package:bmi_calculator/shared/cubit/states.dart';
 import 'package:bmi_calculator/shared/sql_controller.dart';
@@ -14,11 +11,11 @@ class TodoHomeLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => AppCubit(),
+      create: (BuildContext context) => AppCubit()..openDB(),
       child: BlocConsumer<AppCubit, AppStates>(
         listener: (BuildContext context, AppStates states) {},
         builder: (BuildContext context, AppStates states) {
-          var cubit = AppCubit.get(context);
+          AppCubit cubit = AppCubit.get(context);
           return myScaffold(context, cubit);
         }
       ),
@@ -36,7 +33,6 @@ class TodoHomeLayout extends StatelessWidget {
   TextEditingController timeContrl = TextEditingController();
   TextEditingController statusContrl = TextEditingController();
   TextEditingController dateContrl = TextEditingController();
-  SqlController sqlC = SqlController();
 
   // ========= Widgets ==========
 
@@ -55,12 +51,11 @@ class TodoHomeLayout extends StatelessWidget {
       ));
 
   // main Floating Button
-  floatingB(BuildContext context, cubit) => FloatingActionButton(
+  floatingB(BuildContext context,AppCubit cubit) => FloatingActionButton(
       onPressed: () {
         if (cubit.MTBottomSheetShowedIs) {
           if (formKey.currentState!.validate()) {
-            sqlC.insertNewTask(getInfoAsTask());
-            cubit.chTasksListV();
+            cubit.insertTask(getInfoAsTask());
             showBottomSheet(context, cubit);
           }
         } else {
@@ -73,9 +68,11 @@ class TodoHomeLayout extends StatelessWidget {
   mainContainer() => Container();
 
   // bottom bar
-  BottomNavigationBar bottomBar(cubit) => BottomNavigationBar(
+  BottomNavigationBar bottomBar(AppCubit cubit) => BottomNavigationBar(
           currentIndex: cubit.MTBottomBarCurrentIndex,
-          onTap: (index) => cubit.changeIndexBNavBar(index),
+          onTap: (index) {
+                cubit.changeIndexBNavBar(index);
+          },
           items: const [
             BottomNavigationBarItem(
                 icon: Icon(Icons.format_align_justify), label: 'Tasks'),

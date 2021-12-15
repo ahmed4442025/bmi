@@ -40,7 +40,7 @@ class Components {
 
   // simple Button
   Widget simpleButton(
-          {required void Function() onpressed,
+          {required Function() onpressed,
           String txt = 'Log in',
           bool upercase = true,
           double hight = 40,
