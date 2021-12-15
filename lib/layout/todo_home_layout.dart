@@ -2,33 +2,26 @@ import 'package:bmi_calculator/models/task_model.dart';
 import 'package:bmi_calculator/modules/archived/archived_scr.dart';
 import 'package:bmi_calculator/modules/tasks/tasks_scr.dart';
 import 'package:bmi_calculator/modules/tasks_done/tsaks_done_scr.dart';
+import 'package:bmi_calculator/shared/cubit/cubit.dart';
+import 'package:bmi_calculator/shared/cubit/states.dart';
 import 'package:bmi_calculator/shared/sql_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:bmi_calculator/shared/components.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class TodoHomeLayout extends StatefulWidget {
-  const TodoHomeLayout({Key? key}) : super(key: key);
-
-  @override
-  _TodoHomeLayoutState createState() => _TodoHomeLayoutState();
-}
-
-class _TodoHomeLayoutState extends State<TodoHomeLayout> {
-  @override
-  void initState() {
-    super.initState();
-    sqlC.createDB();
-  }
-
+class TodoHomeLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: appBar(),
-      floatingActionButton: floatingB(),
-      body: screens[bottomBarCurrentIndex].scr,
-      bottomNavigationBar: bottomBar(),
+    return BlocProvider(
+      create: (BuildContext context) => AppCubit(),
+      child: BlocConsumer<AppCubit, AppStates>(
+        listener: (BuildContext context, AppStates states) {},
+        builder: (BuildContext context, AppStates states) {
+          var cubit = AppCubit.get(context);
+          return myScaffold(context, cubit);
+        }
+      ),
     );
   }
 
@@ -38,53 +31,51 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
   Components comp = Components();
   var scaffoldKey = GlobalKey<ScaffoldState>();
   var formKey = GlobalKey<FormState>();
-  bool bottomSheetShowedIs = false;
-  IconData fabIcon = Icons.edit;
-  int bottomBarCurrentIndex = 0;
+
   TextEditingController titleContrl = TextEditingController();
   TextEditingController timeContrl = TextEditingController();
   TextEditingController statusContrl = TextEditingController();
   TextEditingController dateContrl = TextEditingController();
   SqlController sqlC = SqlController();
-  List<TodoHomeLayoutData> screens = [
-    TodoHomeLayoutData(Tasks(), 'Tasks'),
-    TodoHomeLayoutData(TasksDoneScr(), 'Tasks Done'),
-    TodoHomeLayoutData(ArchivedScr(), 'Archived'),
-  ];
 
   // ========= Widgets ==========
 
+  Scaffold myScaffold(BuildContext context, cubit) => Scaffold(
+        key: scaffoldKey,
+        appBar: appBar(cubit),
+        floatingActionButton: floatingB(context, cubit),
+        body: cubit.screens[cubit.MTBottomBarCurrentIndex].scr,
+        bottomNavigationBar: bottomBar(cubit),
+      );
+
   //app Bar
-  appBar() => AppBar(
+  appBar(cubit) => AppBar(
           title: Center(
-        child: Text(screens[bottomBarCurrentIndex].title),
+            child: Text(cubit.screens[cubit.MTBottomBarCurrentIndex].title),
       ));
 
   // main Floating Button
-  floatingB() => FloatingActionButton(
+  floatingB(BuildContext context, cubit) => FloatingActionButton(
       onPressed: () {
-        if (bottomSheetShowedIs) {
+        if (cubit.MTBottomSheetShowedIs) {
           if (formKey.currentState!.validate()) {
             sqlC.insertNewTask(getInfoAsTask());
-            showBottomSheet();
+            cubit.chTasksListV();
+            showBottomSheet(context, cubit);
           }
         } else {
-          showBottomSheet();
+          showBottomSheet(context, cubit);
         }
       },
-      child: Icon(fabIcon));
+      child: Icon(cubit.MTFABIcon));
 
   // main Container
   mainContainer() => Container();
 
   // bottom bar
-  BottomNavigationBar bottomBar() => BottomNavigationBar(
-          currentIndex: bottomBarCurrentIndex,
-          onTap: (index) {
-            setState(() {
-              bottomBarCurrentIndex = index;
-            });
-          },
+  BottomNavigationBar bottomBar(cubit) => BottomNavigationBar(
+          currentIndex: cubit.MTBottomBarCurrentIndex,
+          onTap: (index) => cubit.changeIndexBNavBar(index),
           items: const [
             BottomNavigationBarItem(
                 icon: Icon(Icons.format_align_justify), label: 'Tasks'),
@@ -93,7 +84,7 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
           ]);
 
   // build bottom sheet with 3 texts
-  Widget bottomSheet1() => Container(
+  Widget bottomSheet1(BuildContext context) => Container(
         color: Colors.grey[100],
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -111,14 +102,14 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
                   lableTxt: 'time',
                   prefixIcon: Icons.watch_later_outlined,
                   readOnly: true,
-                  ontap: setTimeCFromPicker),
+                  ontap: () => setTimeCFromPicker(context)),
               comp.box(),
               comp.simpleTextField(
                   controler: dateContrl,
                   lableTxt: 'date',
                   prefixIcon: Icons.calendar_today,
                   readOnly: true,
-                  ontap: setDateCFromPicker),
+                  ontap: () => setDateCFromPicker(context)),
               comp.box(),
             ],
           ),
@@ -128,32 +119,31 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
   // ======= Methods =======
 
   // change is open status and FAB icon
-  void changeFABData(bool isOpen) {
-    bottomSheetShowedIs = !isOpen;
-    fabIcon = isOpen ? Icons.edit : Icons.add;
-    setState(() {});
+  void changeFABData(bool isOpen, cubit) {
+    cubit
+        .chMTFABIconData(cubit.MTBottomSheetShowedIs);
   }
 
   // show bottom sheet
-  void showBottomSheet() {
-    if (bottomSheetShowedIs) {
+  void showBottomSheet(BuildContext context, cubit) {
+    if (cubit.MTBottomSheetShowedIs) {
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
-      changeFABData(bottomSheetShowedIs);
+      changeFABData(cubit.MTBottomSheetShowedIs, cubit);
     } else {
       scaffoldKey.currentState!
-          .showBottomSheet((context) => bottomSheet1())
+          .showBottomSheet((context) => bottomSheet1(context))
           .closed
           .then((value) {
-        changeFABData(true);
+        changeFABData(cubit.MTBottomSheetShowedIs, cubit);
       });
-      changeFABData(bottomSheetShowedIs);
+      changeFABData(cubit.MTBottomSheetShowedIs, cubit);
     }
   }
 
   //show Time picker
-  void setTimeCFromPicker() {
+  void setTimeCFromPicker(BuildContext context) {
     showTimePicker(context: context, initialTime: TimeOfDay.now())
         .then((value) {
       timeContrl.text = value!.format(context);
@@ -161,7 +151,7 @@ class _TodoHomeLayoutState extends State<TodoHomeLayout> {
   }
 
   // show date picker
-  void setDateCFromPicker() {
+  void setDateCFromPicker(BuildContext context) {
     showDatePicker(
             context: context,
             initialDate: DateTime.now(),

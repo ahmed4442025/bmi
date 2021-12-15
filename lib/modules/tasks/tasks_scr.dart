@@ -12,9 +12,14 @@ class Tasks extends StatelessWidget {
 
   mainContainer() => Container(
         child: allTasksPublic.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ?  Center(child: tempW())
             : buildListView(),
       );
+
+  Widget tempW()=>Container(
+    // child: CircularProgressIndicator(),
+    child: comp.simpleText(txt: 'gg'),
+  );
 
   Widget buildListView() => ListView.separated(
       itemBuilder: (context, index) =>

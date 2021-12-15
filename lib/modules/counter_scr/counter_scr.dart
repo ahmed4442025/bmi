@@ -13,14 +13,13 @@ class CounterScr extends StatelessWidget {
       create: (BuildContext context) => CounterCubit(),
       child: BlocConsumer<CounterCubit, CounterStates>(
         listener: (context, state) {
-          if(state is CounterPlusState){
+          if (state is CounterPlusState) {
+            print(state.counter);
+          }if (state is CounterMinusState) {
             print(state.counter);
           }
         },
-        builder: (context, state){
-          if(state is CounterPlusState){
-            print(state.counter);
-          }
+        builder: (context, state) {
           return myScaffold(context);
         },
       ),
@@ -54,7 +53,8 @@ class CounterScr extends StatelessWidget {
                 txt: '+',
                 w: 50),
             comp.box(),
-            comp.simpleText(txt: CounterCubit.get(context).counter.toString()),
+            comp.simpleText(
+                txt: CounterCubit.get(context).counter.toString(), size: 40),
             comp.box(),
             comp.simpleButton(
                 onpressed: () {
