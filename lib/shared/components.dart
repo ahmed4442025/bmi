@@ -1,5 +1,8 @@
 import 'package:bmi_calculator/models/task_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'cubit/cubit.dart';
 
 class Components {
   // simpleTextField
@@ -79,23 +82,43 @@ class Components {
       );
 
   // task builder
-  Widget buildTaskItem(TaskModel task) => Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              child: simpleText(txt: task.time, size: 15),
-              radius: 35,
-            ),
-            box(w: 20),
-            Column(
-              mainAxisSize: MainAxisSize.min,
+  Widget buildTaskItem(TaskModel task,
+          {Function()? onDonePress,
+          Function()? onArchPress,
+          void onDisMiss()?}) =>
+      Dismissible(
+          key: Key(task.id.toString()),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                simpleText(txt: task.title, bold: true),
-                simpleText(txt: task.date),
+                Row(
+                  children: [
+                    CircleAvatar(
+                      child: simpleText(txt: task.time, size: 15),
+                      radius: 35,
+                    ),
+                    box(w: 20),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        simpleText(txt: task.title, bold: true),
+                        simpleText(txt: task.date),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    IconButton(onPressed: onDonePress, icon: Icon(Icons.done)),
+                    IconButton(onPressed: onArchPress, icon: Icon(Icons.star)),
+                  ],
+                ),
               ],
-            )
-          ],
-        ),
-      );
+            ),
+          ),
+          onDismissed: (d) {
+            onDisMiss!();
+          });
 }

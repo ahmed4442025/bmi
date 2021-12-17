@@ -86,29 +86,31 @@ class TodoHomeLayout extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Form(
           key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              comp.simpleTextField(
-                  controler: titleContrl,
-                  lableTxt: 'title',
-                  prefixIcon: Icons.title),
-              comp.box(),
-              comp.simpleTextField(
-                  controler: timeContrl,
-                  lableTxt: 'time',
-                  prefixIcon: Icons.watch_later_outlined,
-                  readOnly: true,
-                  ontap: () => setTimeCFromPicker(context)),
-              comp.box(),
-              comp.simpleTextField(
-                  controler: dateContrl,
-                  lableTxt: 'date',
-                  prefixIcon: Icons.calendar_today,
-                  readOnly: true,
-                  ontap: () => setDateCFromPicker(context)),
-              comp.box(),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                comp.simpleTextField(
+                    controler: titleContrl,
+                    lableTxt: 'title',
+                    prefixIcon: Icons.title),
+                comp.box(),
+                comp.simpleTextField(
+                    controler: timeContrl,
+                    lableTxt: 'time',
+                    prefixIcon: Icons.watch_later_outlined,
+                    readOnly: true,
+                    ontap: () => setTimeCFromPicker(context)),
+                comp.box(),
+                comp.simpleTextField(
+                    controler: dateContrl,
+                    lableTxt: 'date',
+                    prefixIcon: Icons.calendar_today,
+                    readOnly: true,
+                    ontap: () => setDateCFromPicker(context)),
+                comp.box(),
+              ],
+            ),
           ),
         ),
       );
@@ -116,7 +118,7 @@ class TodoHomeLayout extends StatelessWidget {
   // ======= Methods =======
 
   // change is open status and FAB icon
-  void changeFABData(bool isOpen, cubit) {
+  void changeFABData(bool isOpen,AppCubit cubit) {
     cubit
         .chMTFABIconData(cubit.MTBottomSheetShowedIs);
   }
@@ -127,7 +129,7 @@ class TodoHomeLayout extends StatelessWidget {
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
-      changeFABData(cubit.MTBottomSheetShowedIs, cubit);
+      return;
     } else {
       scaffoldKey.currentState!
           .showBottomSheet((context) => bottomSheet1(context))

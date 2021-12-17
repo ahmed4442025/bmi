@@ -57,8 +57,8 @@ class SqlController {
 
   Future<List<TaskModel>> setAllTasksToVar(Database db) async {
     var value = await _getAllTasksFromTabl(db);
-      allTasks = value;
-      return _tasksRawToTaksModel(value);
+    allTasks = value;
+    return _tasksRawToTaksModel(value);
   }
 
   List<TaskModel> _tasksRawToTaksModel(List<Map<dynamic, dynamic>> tasksRaw) {
@@ -67,5 +67,17 @@ class SqlController {
       lis.add(TaskModel.fromMap(tasksRaw[i]));
     }
     return lis;
+  }
+
+  Future<int> updateStatus(Database db,
+      {required int id, required String status}) async {
+    int count = await db.rawUpdate(
+        'UPDATE $_taskTable SET status = ? WHERE id = ?', [status, id]);
+    return count;
+  }
+
+  Future<int> deletebyId(Database db, {required String id}) async {
+    int count = await db.rawDelete('DELETE FROM $_taskTable WHERE id = ?', [id]);
+    return count;
   }
 }

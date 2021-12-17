@@ -16,7 +16,9 @@ class AppCubit extends Cubit<AppStates> {
   static AppCubit get(context) => BlocProvider.of(context);
 
   // shared vars
-  List<TaskModel> allTasksP = [];
+  List<TaskModel> allTasksNew = [];
+  List<TaskModel> allTasksDone = [];
+  List<TaskModel> allTasksArchived = [];
 
   // ======== MAIN_TODO ========
   // vars
@@ -60,18 +62,67 @@ class AppCubit extends Cubit<AppStates> {
     sql.createDB().then((value) {
       db = value;
       sql.setAllTasksToVar(db).then((value) {
-        allTasksP = value;
+        _setAllTasksVars(value);
         emit(AppGetTasksFDB());
       });
     });
   }
 
   // insert new Task
-void insertTask(TaskModel task){
+  void insertTask(TaskModel task) {
     sql.insertNewTask(task);
     sql.setAllTasksToVar(db).then((value) {
-      allTasksP = value;
+      _setAllTasksVars(value);
       emit(AppGetTasksFDB());
     });
-}
+  }
+
+  // update status
+  void updateStatus({required int id, required String status}) {
+    sql.updateStatus(db, id: id, status: status).then((value) {
+      emit(AppUpdateDB());
+      sql.setAllTasksToVar(db).then((value) {
+        _setAllTasksVars(value);
+        emit(AppGetTasksFDB());
+      });
+    });
+  }
+
+  // delete element
+  void deleteById({required String id}) {
+    sql.deletebyId(db, id: id).then((value) {
+      emit(AppDeleteFromDB());
+      sql.setAllTasksToVar(db).then((value) {
+        _setAllTasksVars(value);
+        emit(AppGetTasksFDB());
+      });
+    });
+  }
+
+  void _setAllTasksVars(List<TaskModel> tasks) {
+    allTasksNew = [];
+    allTasksDone = [];
+    allTasksArchived = [];
+
+    tasks.forEach((element) {
+      if (element.status == 'new') {
+        allTasksNew.add(element);
+      }
+      if (element.status == 'done') {
+        allTasksDone.add(element);
+      }
+      if (element.status == 'archived') {
+        allTasksArchived.add(element);
+      }
+    });
+    screens[0].title =
+        "Tasks" + (allTasksNew.isEmpty ? "" : " (${allTasksNew.length})");
+    screens[1].title = "Tasks Done" +
+        (allTasksDone.isEmpty ? "" : " (${allTasksDone.length})");
+    screens[2].title = "Archived" +
+        (allTasksArchived.isEmpty ? "" : " (${allTasksArchived.length})");
+
+
+    // emit(AppChTasksListV());
+  }
 }
